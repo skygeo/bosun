@@ -260,6 +260,26 @@ var cadvisorMeta = map[string]MetricMeta{
 		Unit:     metadata.Bytes,
 		Desc:     "Current working set.",
 	},
+	"container.memory.cache": {
+		RateType: metadata.Gauge,
+		Unit:     metadata.Bytes,
+		Desc:     "Number of bytes of page cache memory.",
+	},
+	"container.memory.rss": {
+		RateType: metadata.Gauge,
+		Unit:     metadata.Bytes,
+		Desc:     "The amount of anonymous and swap cache memory (includes transparent hugepages).",
+	},
+	"container.memory.swap": {
+		RateType: metadata.Gauge,
+		Unit:     metadata.Bytes,
+		Desc:     "The amount of swap currently used by the processes in this cgroup.",
+	},
+	"container.memory.failcnt": {
+		RateType: metadata.Counter,
+		Unit:     metadata.Fault,
+		Desc:     "The number of times the cgroup limit was exceeded.",
+	},
 	"container.net.bytes": {
 		RateType: metadata.Counter,
 		Unit:     metadata.Bytes,
@@ -429,6 +449,10 @@ func statsForContainer(md *opentsdb.MultiDataPoint, container *v1.ContainerInfo,
 			containerTagSet(opentsdb.TagSet{"scope": "hierarchy", "type": "pgmajfault"}, container))
 		cadvisorAdd(md, "container.memory.working_set", stats.Memory.WorkingSet, containerTagSet(nil, container))
 		cadvisorAdd(md, "container.memory.usage", stats.Memory.Usage, containerTagSet(nil, container))
+		cadvisorAdd(md, "container.memory.cache", stats.Memory.Cache, containerTagSet(nil, container))
+		cadvisorAdd(md, "container.memory.rss", stats.Memory.RSS, containerTagSet(nil, container))
+		cadvisorAdd(md, "container.memory.swap", stats.Memory.Swap, containerTagSet(nil, container))
+		cadvisorAdd(md, "container.memory.failcnt", stats.Memory.Failcnt, containerTagSet(nil, container))
 	}
 
 	if container.Spec.HasNetwork {
